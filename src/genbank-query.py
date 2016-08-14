@@ -4,9 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
-import csv
 
-from simons_spark_genbank import nhci
+from simons_spark_genbank import nhci, util
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -19,15 +18,15 @@ if __name__ == "__main__":
     parser.add_argument("--stream-chunk-size", default=8192)
     args = parser.parse_args()
 
+    stdout_handler = util.stdout_sink(lambda vals: "\t".join(map(unicode, vals)) + "\n")
+    csv_handler = util.csv_file_sink(args.output_file,
+                                     header=('matched_sequence', 'start_pos', 'end_pos'))
     if args.stream:
         nhci.query_async(args.database, args.id, args.tag_regexp, args.regexp,
+                         output_handlers=(stdout_handler, csv_handler),
                          stream_chunk_size=args.stream_chunk_size)
     else:
         out = nhci.query(args.database, args.id, args.tag_regexp, args.regexp)
-        with open(args.output_file, 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(('matched_sequence', 'start_pos', 'end_pos'))
-            for row in out:
-                # matched_sequence, start_pos, end_pos = row
-                writer.writerow(row)
-                print("\t".join(map(str, row)))
+        for row in out:
+            for handler in (stdout_handler, csv_handler):
+                handler.send(row)

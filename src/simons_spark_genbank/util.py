@@ -3,6 +3,9 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import csv
+import sys
+
 
 def coroutine(func):
     def wrapped(*args, **kwargs):
@@ -14,14 +17,18 @@ def coroutine(func):
 
 
 @coroutine
-def tsv_sink(stream):
+def stdout_sink(formatter):
     while True:
-        values = (yield)
-        stream.write("\t".join(map(unicode, values)) + "\n")
+        value = (yield)
+        sys.stdout.write(formatter(value))
 
 
 @coroutine
-def file_sync(writer):
-    while True:
-        values = (yield)
-        writer.writerow(values)
+def csv_file_sink(filepath, header=None):
+    with open(filepath, 'w') as f:
+        writer = csv.writer(f)
+        if header:
+            writer.writerow(header)
+        while True:
+            values = (yield)
+            writer.writerow(values)

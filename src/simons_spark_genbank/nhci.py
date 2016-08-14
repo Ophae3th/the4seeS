@@ -6,10 +6,9 @@ from __future__ import unicode_literals
 from functools import partial
 import re
 import requests
-import sys
 from xml import sax
 
-from .util import tsv_sink
+from .util import stdout_sink
 from .xmltools import XMLStreamTransformer, BufferHandler
 
 NHCI_URL_TEMPLATE = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={id}&retmode=xml&rettype=fasta"
@@ -44,16 +43,14 @@ def prepare_filter(tag_regexp, content_regexp, tag, content):
                          content)
 
 
-def query_async(db, dbid, tag_regexp, content_regexp, output_streams=None, stream_chunk_size=8192):
-    if output_streams is None:
-        output_streams = [tsv_sink(sys.stdout)]
-    else:
-        output_streams = map(tsv_sink, output_streams)
+def query_async(db, dbid, tag_regexp, content_regexp, output_handlers=None, stream_chunk_size=8192):
+    if output_handlers is None:
+        output_handlers = (stdout_sink(lambda vals: "\t".join(map(unicode, vals)) + "\n"),)
     transformer = partial(prepare_filter, tag_regexp, content_regexp)
 
     input_stream = requests.get(nhci_url(db, dbid), stream=True)
     transformer = XMLStreamTransformer(input_stream.iter_content(chunk_size=stream_chunk_size),
-                                       transformer, output_streams)
+                                       transformer, output_handlers)
     transformer.run()
 
 
