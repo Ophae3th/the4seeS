@@ -10,6 +10,21 @@ import csv
 import sys
 
 
+class Counter(object):
+    """
+    Simple as it looks. Avoid using collections.Counter in case py2.6 compatibility needed.
+    """
+    def __init__(self):
+        self._count = 0
+
+    def count(self, val):
+        self._count += val
+
+    @property
+    def value(self):
+        return self._count
+
+
 def coroutine(func):
     """
     Ensures generator execution is advanced to a state where
