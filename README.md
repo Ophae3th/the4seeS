@@ -19,6 +19,8 @@ The program is structured as a library exposing a high-level interface to queryi
 
 This package can be installed with `pip` or another method making use of the included setup.py script.
 
+Expected compatibility with any python v2.7 release on any Linux-like system. Only tested agaist python v2.7.9 on Mac OSX.
+
 Command line usage information can be displayed using the `--help` option:
 
     $ python genbank-query.py --help
