@@ -17,13 +17,22 @@ from simons_spark_genbank.errors import NCBIWebRequestError, RegexpError
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--database", required=True)
-    parser.add_argument("-i", "--id", required=True)
-    parser.add_argument("-r", "--regexp", required=True)
+    parser.add_argument("-d", "--database", required=True,
+                        help="Name of an NCBI database.")
+    parser.add_argument("-i", "--id", required=True,
+                        help="ID of a sequence record within the specified database.")
+    parser.add_argument("-r", "--regexp", required=True,
+                        help="A regular expression string with which to search the sequence.")
     parser.add_argument("-o", "--output-file", required=True, help="Name of CSV file to be output.")
     parser.add_argument("-tr", "--tag-regexp", default=r"^TSeq_sequence$")
-    parser.add_argument("--stream", action="store_true", default=False)
-    parser.add_argument("--stream-chunk-size", default=8192)
+    parser.add_argument("--stream", action="store_true", default=False,
+                        help="Process the sequence on the fly rather than retrieving all at once. "
+                             "USE WITH CAUTION - not guaranteed to match every sequence for every regexp.")
+    parser.add_argument("--stream-chunk-size", default=8192,
+                        help="The size of the sequence to be matched by the regexp at a time when in streaming mode. "
+                             "For regexes which may match large sequences, set this to a high value. "
+                             "To avoid match problems at chunk boundaries, you may need to run more than once with "
+                             "non-aligned chunk sizes and compute the set difference to locate certain matches.")
     args = parser.parse_args()
 
     stdout_handler = util.stdout_sink(lambda vals: "\t".join(map(unicode, vals)) + "\n")
