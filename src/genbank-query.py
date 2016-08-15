@@ -16,6 +16,7 @@ from simons_spark_genbank.errors import NCBIWebRequestError, RegexpError
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)s: %(message)s")
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--database", required=True,
                         help="Name of an NCBI database.")
