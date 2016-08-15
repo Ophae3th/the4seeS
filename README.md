@@ -17,6 +17,8 @@ The program is structured as a library exposing a high-level interface to queryi
 
 ## Program usage
 
+This package can be installed with `pip` or another method making use of the included setup.py script.
+
 Command line usage information can be displayed using the `--help` option:
 
     $ python genbank-query.py --help
@@ -27,13 +29,25 @@ Command line usage information can be displayed using the `--help` option:
     optional arguments:
       -h, --help            show this help message and exit
       -d DATABASE, --database DATABASE
-      -i ID, --id ID
+                            Name of an NCBI database.
+      -i ID, --id ID        ID of a sequence record within the specified database.
       -r REGEXP, --regexp REGEXP
+                            A regular expression string with which to search the
+                            sequence.
       -o OUTPUT_FILE, --output-file OUTPUT_FILE
                             Name of CSV file to be output.
       -tr TAG_REGEXP, --tag-regexp TAG_REGEXP
-      --stream
+      --stream              Process the sequence on the fly rather than retrieving
+                            all at once. USE WITH CAUTION - not guaranteed to
+                            match every sequence for every regexp.
       --stream-chunk-size STREAM_CHUNK_SIZE
+                            The size of the sequence to be matched by the regexp
+                            at a time when in streaming mode. For regexes which
+                            may match large sequences, set this to a high value.
+                            To avoid match problems at chunk boundaries, you may
+                            need to run more than once with non-aligned chunk
+                            sizes and compute the set difference to locate certain
+                            matches.
 
 ## Etc
 
