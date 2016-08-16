@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 
+import time
 from simons_spark_genbank import ncbi, util
 from simons_spark_genbank.errors import NCBIWebRequestError, RegexpError
 
@@ -62,14 +63,23 @@ if __name__ == "__main__":
             for row in out:
                 for handler in (stdout_handler, csv_handler):
                     handler.send(row)
+
+    # The terminal will be reset from 'curses' settings in a 'finally' block
+    # regardless of reset_term() here. These reset_term calls() are just so
+    # that the log messages will be captured properly, and called when there's
+    # no log message for consistency.
     except NCBIWebRequestError as e:
+        util.reset_term()
         logger.fatal(e)
         sys.exit(1)
     except RegexpError as e:
+        util.reset_term()
         logger.fatal(e)
         sys.exit(1)
     except KeyboardInterrupt as e:
+        util.reset_term()
         sys.exit(3)
     except StopIteration as e:
         # Corresponds to pressing 'q'.
+        util.reset_term()
         sys.exit(3)

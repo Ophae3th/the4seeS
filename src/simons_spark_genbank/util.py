@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import curses
 import csv
+import re
 import sys
 
 from collections import defaultdict
@@ -70,6 +71,7 @@ def aggregating_curses_sink():
 
     :return: None
     """
+    matches = defaultdict(int)
     try:
         stdscr = curses.initscr()
         # Turn off echoing of keys, and enter cbreak mode,
@@ -92,7 +94,6 @@ def aggregating_curses_sink():
         pad.addstr(0, 0, "Counting sequence matches.\n")
         pad.addstr(1, 0, "\n")
         pad.addstr(2, 0, "Seq\tCount\n", curses.A_STANDOUT)
-        matches = defaultdict(int)
         while True:
             values = (yield)
             sequence = values[0]
@@ -116,16 +117,17 @@ def aggregating_curses_sink():
         # Always clean up.
         # Write the current pad contents to stdout as usual after
         # the window has been closed so that final output will remain visible.
-        mypad_contents = []
-        for i in range(pad_height):
-            mypad_contents.append(pad.instr(i, 0))
         stdscr.keypad(0)
-        curses.echo()
-        curses.nocbreak()
-        curses.endwin()
-        # Exclude "counting sequence matches" header from final frame.
-        for line in mypad_contents[1:]:
-            sys.stdout.write(line + "\n")
+        reset_term()
+        if matches:
+            mypad_contents = []
+            for i in range(pad_height):
+                mypad_contents.append(pad.instr(i, 0))
+            for line in mypad_contents:
+                if not re.match(r"^Press.*|^Counting.*", line):
+                    sys.stdout.write(line + "\n")
+        else:
+            sys.stdout.write("\n")
 
 
 @coroutine
@@ -143,3 +145,9 @@ def csv_file_sink(filepath, header=None):
         while True:
             values = (yield)
             writer.writerow(values)
+
+
+def reset_term():
+    curses.echo()
+    curses.nocbreak()
+    curses.endwin()
