@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
+import curses
 import logging
 import os
 import sys
@@ -16,6 +17,7 @@ from simons_spark_genbank.errors import NCBIWebRequestError, RegexpError
 
 
 if __name__ == "__main__":
+    logger = logging.getLogger(__name__)
     logging.basicConfig(format="%(levelname)s: %(message)s")
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--database", required=True,
@@ -36,14 +38,17 @@ if __name__ == "__main__":
                              "non-aligned chunk sizes and compute the set difference to locate certain matches.")
     args = parser.parse_args()
 
-    stdout_handler = util.stdout_sink(lambda vals: "\t".join(map(unicode, vals)) + "\n")
+    if sys.stdout.isatty():
+        stdout_handler = util.aggregating_curses_sink()
+    else:
+        stdout_handler = util.stdout_sink(lambda vals: "\t".join(map(unicode, vals)) + "\n")
     try:
         csv_handler = util.csv_file_sink(args.output_file,
                                          header=('matched_sequence', 'start_pos', 'end_pos'))
     except IOError as e:
-        logging.fatal(e)
+        logger.fatal(e)
         if not os.path.exists(os.path.join(args.output_file, os.pardir)):
-            logging.fatal("Please create all directories in path '{0}'. "
+            logger.fatal("Please create all directories in path '{0}'. "
                           "The file will be created for you.".format(args.output_file))
         sys.exit(1)
 
@@ -58,8 +63,13 @@ if __name__ == "__main__":
                 for handler in (stdout_handler, csv_handler):
                     handler.send(row)
     except NCBIWebRequestError as e:
-        logging.fatal(e)
+        logger.fatal(e)
         sys.exit(1)
     except RegexpError as e:
-        logging.fatal(e)
+        logger.fatal(e)
         sys.exit(1)
+    except KeyboardInterrupt as e:
+        sys.exit(3)
+    except StopIteration as e:
+        # Corresponds to pressing 'q'.
+        sys.exit(3)

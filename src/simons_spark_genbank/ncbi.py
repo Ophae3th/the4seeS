@@ -14,7 +14,7 @@ from xml import sax
 from xml.etree import ElementTree
 
 from .errors import NCBIWebRequestError, RegexpError
-from .util import stdout_sink, Counter
+from .util import stdout_sink, Accumulator
 from .xmltools import XMLStreamTransformer, BufferHandler
 
 NCBI_URL_TEMPLATE = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db={db}&id={id}&retmode=xml&rettype=fasta"
@@ -126,7 +126,7 @@ def query_async(db, dbid, tag_regexp, content_regexp, output_handlers=None, stre
     """
     if output_handlers is None:
         output_handlers = (stdout_sink(lambda vals: "\t".join(map(unicode, vals)) + "\n"),)
-    transformer = partial(prepare_filter, tag_regexp, content_regexp, Counter())
+    transformer = partial(prepare_filter, tag_regexp, content_regexp, Accumulator())
     input_stream = make_web_request(db, dbid, stream=True)
     transformer = XMLStreamTransformer(input_stream.iter_content(chunk_size=stream_chunk_size),
                                        transformer, output_handlers)
@@ -142,7 +142,7 @@ def query(db, dbid, tag_regexp, content_regexp):
     :param content_regexp: a string pattern to match content against
     :return: a list of tuples: (matched sequence, start offset, end offset)
     """
-    transformer = partial(prepare_filter, tag_regexp, content_regexp, Counter())
+    transformer = partial(prepare_filter, tag_regexp, content_regexp, Accumulator())
     res = make_web_request(db, dbid, stream=False)
     xml = res.content
     handler = BufferHandler(transformer)
