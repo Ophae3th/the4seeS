@@ -19,7 +19,8 @@ The program is structured as a library exposing a high-level interface to queryi
 
 This package can be installed with `pip` or another method making use of the included setup.py script.
 
-Expected compatibility with any python v2.7 release on any Linux-like system, though other versions may work. Only tested against python v2.7.9 on Mac OSX.
+Compatibility is expected with any python v2.7 release on any Linux-like system, though other versions may work. 
+Only tested against python v2.7.9 on Mac OSX.
 
 Command line usage information can be displayed using the `--help` option:
 
@@ -51,6 +52,38 @@ Command line usage information can be displayed using the `--help` option:
                             sizes and compute the set difference to locate certain
                             matches.
 
-## Etc
+Results are printed to stdout in the form of counts of matched sequences. If stdout is not redirected,
+counts will be updated in place in the terminal (via the curses library) as the data is processed. 
+If stdout is redirected, though, as to a file or another program, matches are not aggregated, but rather 
+each sequence and its offsets are provided on each line, tab-delimited. Comma-delimited matches 
+and offsets are always written to the filename specified.
 
-This username and repository name were selected from choices presented by `pwgen`, in case you were wondering.
+### Example
+
+    Falcon:src ddodson$ python genbank-query.py -d nucleotide -i 224589800 -r "(A|C|G|T)" -o out.txt --stream
+    Counting sequence matches.
+
+    Seq     Count
+    A       20778
+    T       19778
+    C       16019
+    G       14626
+    
+    Press Ctrl-C or 'q' to exit.
+
+    Falcon:src ddodson$ wc -l out.txt                                                                                       
+    56108 out.txt                                                                                                        
+    
+    Falcon:src ddodson$ tail !$                                                                                             
+    tail out.txt                                                                                                            
+    T,66098,66098                                                                                                           
+    G,66099,66099                                                                                                           
+    T,66100,66100                                                                                                           
+    G,66101,66101                                                                                                           
+    C,66102,66102                                                                                                          
+    C,66103,66103                                                                                                           
+    A,66104,66104                                                                                                           
+    G,66105,66105                                                                                                           
+    A,66106,66106                                                                                                           
+    A,66107,66107          
+
