@@ -64,8 +64,7 @@ if __name__ == "__main__":
 
     # The terminal will be reset from 'curses' settings in a 'finally' block
     # regardless of reset_term() here. These reset_term calls() are just so
-    # that the log messages will be captured properly, and called when there's
-    # no log message for consistency.
+    # that the log messages will be captured properly.
     except NCBIWebRequestError as e:
         util.reset_term()
         logger.fatal(e)
@@ -75,9 +74,7 @@ if __name__ == "__main__":
         logger.fatal(e)
         sys.exit(1)
     except KeyboardInterrupt as e:
-        util.reset_term()
         sys.exit(3)
     except StopIteration as e:
         # Corresponds to pressing 'q'.
-        util.reset_term()
         sys.exit(3)

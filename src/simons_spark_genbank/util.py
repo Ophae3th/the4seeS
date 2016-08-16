@@ -124,7 +124,7 @@ def aggregating_curses_sink():
             for i in range(pad_height):
                 mypad_contents.append(pad.instr(i, 0))
             for line in mypad_contents:
-                if not re.match(r"^Press.*|^Counting.*", line):
+                if not re.match(r"^\s+$|^Press.*|^Counting.*", line):
                     sys.stdout.write(line + "\n")
         else:
             sys.stdout.write("\n")

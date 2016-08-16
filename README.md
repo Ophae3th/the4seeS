@@ -60,30 +60,41 @@ and offsets are always written to the filename specified.
 
 ### Example
 
-    $ python genbank-query.py -d nucleotide -i 224589800 -r "(A|C|G|T)" -o out.txt --stream
+    $ time python genbank-query.py -d nucleotide -i 224589800 -r "(A|C|G|T)" -o out.txt --stream
+   
     Counting sequence matches.
-
+    
     Seq     Count
-    A       20778
-    T       19778
-    C       16019
-    G       14626
+    C       8491
+    G       8246
+    A       7846
+    T       7524
     
     Press Ctrl-C or 'q' to exit.
 
-    $ wc -l out.txt                                                                                       
-    56108 out.txt                                                                                                        
+    $ # After 'q' is pressed
+    $ time python genbank-query.py -d nucleotide -i 224589800 -r "(A|C|G|T)" -o out.txt --stream
+    Seq     Count
+    A       11683
+    T       10615
+    C       10385
+    G       9986
     
-    $ tail !$                                                                                             
-    tail out.txt                                                                                                            
-    T,66098,66098                                                                                                           
-    G,66099,66099                                                                                                           
-    T,66100,66100                                                                                                           
-    G,66101,66101                                                                                                           
-    C,66102,66102                                                                                                          
-    C,66103,66103                                                                                                           
-    A,66104,66104                                                                                                           
-    G,66105,66105                                                                                                           
-    A,66106,66106                                                                                                           
-    A,66107,66107          
+    real    0m4.093s
+    user    0m2.790s
+    sys     0m0.435s
+
+
+    $ tail out.txt
+    A,37840,37840
+    T,37841,37841
+    A,37842,37842
+    T,37843,37843
+    T,37844,37844
+    T,37845,37845
+    T,37846,37846
+    G,37847,37847
+    T,37848,37848
+    G,37849,37849
+  
 
