@@ -7,12 +7,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
-import curses
 import logging
 import os
 import sys
 
-import time
 from simons_spark_genbank import ncbi, util
 from simons_spark_genbank.errors import NCBIWebRequestError, RegexpError
 

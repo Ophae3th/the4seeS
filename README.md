@@ -60,7 +60,7 @@ and offsets are always written to the filename specified.
 
 ### Example
 
-    Falcon:src ddodson$ python genbank-query.py -d nucleotide -i 224589800 -r "(A|C|G|T)" -o out.txt --stream
+    $ python genbank-query.py -d nucleotide -i 224589800 -r "(A|C|G|T)" -o out.txt --stream
     Counting sequence matches.
 
     Seq     Count
@@ -71,10 +71,10 @@ and offsets are always written to the filename specified.
     
     Press Ctrl-C or 'q' to exit.
 
-    Falcon:src ddodson$ wc -l out.txt                                                                                       
+    $ wc -l out.txt                                                                                       
     56108 out.txt                                                                                                        
     
-    Falcon:src ddodson$ tail !$                                                                                             
+    $ tail !$                                                                                             
     tail out.txt                                                                                                            
     T,66098,66098                                                                                                           
     G,66099,66099                                                                                                           
